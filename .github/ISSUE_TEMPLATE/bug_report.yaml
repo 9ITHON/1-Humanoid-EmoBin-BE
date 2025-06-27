@@ -1,0 +1,70 @@
+name: 🐞 Bug Report
+description: 프로그램 오류나 버그를 제보해주세요
+labels: ["🐞 BUG"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐞 버그 제보 양식
+        아래 내용을 작성해주시면 문제 해결에 큰 도움이 됩니다.
+  - type: input
+    id: title
+    attributes:
+      label: 버그 제목
+      placeholder: 예) 회원가입 시 이메일 인증이 실패함
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 버그 설명
+      description: 버그가 무엇인지 간단하고 명확하게 설명해주세요
+      placeholder: |
+        예) 회원가입에서 인증 이메일이 전송되지 않습니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 절차
+      description: 해당 버그를 재현하는 정확한 절차를 단계별로 적어주세요
+      placeholder: |
+        1. 회원가입 페이지 접속
+        2. 이메일과 비밀번호 입력
+        3. '회원가입' 버튼 클릭
+        4. 아무런 이메일도 도착하지 않음
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작
+      description: 원래 어떤 결과가 나와야 하는지 구체적으로 적어주세요
+      placeholder: |
+        예) 인증 이메일이 1분 이내로 수신돼야 합니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+      description: 버그가 발생했을 때 실제로 어떤 일이 있었는지 설명해주세요
+      placeholder: |
+        예) 인증 이메일이 오지 않음. 콘솔 로그에도 오류 메시지 없음.
+
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: 참고 자료 (스크린샷, 로그 등)
+      description: 문제를 설명하는 데 도움이 될 이미지나 로그가 있다면 붙여주세요 (선택)
+      placeholder: 예) 오류 로그 캡처 또는 스크린샷
+
+  - type: input
+    id: env
+    attributes:
+      label: 실행 환경
+      placeholder: 예) Chrome 124 / Windows 11 / 모바일 Safari
