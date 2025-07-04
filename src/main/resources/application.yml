@@ -18,6 +18,10 @@ spring:
       enabled: true
       path: /h2-console
 
-  redis:
-    host:${REDIS_HOST}
-    port:${REDIS_PORT}
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+
+jwt:
+  secret: ${JWT_SECRET}
