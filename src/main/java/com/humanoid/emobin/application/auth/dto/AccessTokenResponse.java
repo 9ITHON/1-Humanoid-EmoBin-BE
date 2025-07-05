@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class LoginResponse {
-    private final String accessToken;
-    private final String refreshToken;
+public class AccessTokenResponse {
+    private String accessToken;
 }

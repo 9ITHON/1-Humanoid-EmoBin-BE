@@ -1,5 +1,8 @@
 package com.humanoid.emobin.infrastructure.jwt;
 
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.exception.AuthErrorCode;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtProvider {
@@ -32,21 +36,21 @@ public class JwtProvider {
     private String createToken(Long memberId, String type, long expireTime) {
 
         return Jwts.builder()
-                .setSubject(String.valueOf(memberId))
-                //.claim("type", type)                      // access or refresh
+                .setSubject(type)
+                .setId(UUID.randomUUID().toString())
+                .claim("memberId", memberId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String getMemberIdFromToken(String token) {
+    public Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
     public boolean validateToken(String token) {
@@ -56,13 +60,28 @@ public class JwtProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            throw new CustomException(AuthErrorCode.TOKEN_EXPIRED);
+        } catch (io.jsonwebtoken.MalformedJwtException e) {
+            throw new CustomException(AuthErrorCode.MALFORMED_TOKEN);
+        }catch (Exception e) {
+            throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         }
+    }
+
+    public long getRemainingMillis(Claims claims) {
+        Date expiration = claims.getExpiration(); // 만료 시간
+        long now = System.currentTimeMillis();    // 현재 시간
+
+        return Math.max(expiration.getTime() - now, 0);
     }
 
     public String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
         return (bearer != null && bearer.startsWith("Bearer ")) ? bearer.substring(7) : null;
+    }
+
+    public String resolveToken(String header) {
+        return (header != null && header.startsWith("Bearer ")) ? header.substring(7) : null;
     }
 }

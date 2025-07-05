@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -12,8 +13,8 @@ public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void setData(String key, Object value, long duration, TimeUnit unit) {
-        redisTemplate.opsForValue().set(key, value, duration, unit);
+    public void setData(String key, Object value, long duration) {
+        redisTemplate.opsForValue().set(key, value, Duration.ofMillis(duration));
     }
 
     public Object getData(String key) {

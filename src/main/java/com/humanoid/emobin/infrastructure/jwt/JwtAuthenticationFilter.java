@@ -1,5 +1,9 @@
 package com.humanoid.emobin.infrastructure.jwt;
 
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.exception.AuthErrorCode;
+import com.humanoid.emobin.infrastructure.redis.RedisService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +21,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -25,13 +30,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtProvider.resolveToken(request);
 
         if (token != null && jwtProvider.validateToken(token)) {
-            String memberId = jwtProvider.getMemberIdFromToken(token);
+            Claims claims = jwtProvider.parseClaims(token);
+            String tokenId = claims.getId();
+
+            // 블랙리스트 검사
+            if (redisService.exists("blacklist:access:" + tokenId)) {
+                throw new CustomException(AuthErrorCode.TOKEN_BLACKLISTED);
+            }
+
+            Long memberId = claims.get("memberId", Long.class);
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(memberId, null, null); // 권한이 필요하면 세 번째 인자에 넣어줘
+                    new UsernamePasswordAuthenticationToken(memberId, null, null);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(request, response);
+        }else{
+            throw new CustomException(AuthErrorCode.TOKEN_NOT_FOUND);
         }
-        chain.doFilter(request, response);
     }
 }
