@@ -26,8 +26,10 @@ jobs:
 
       - name: Check JAR and run.sh
         run: |
-          ls -l build/libs/
-          ls -l run.sh
+          echo ":: 빌드 결과 확인 ::"
+          ls -al build/libs/
+          echo ":: run.sh 위치 확인 ::"
+          ls -al run.sh
 
       - name: Upload artifacts to EC2
         uses: appleboy/scp-action@v0.1.7
