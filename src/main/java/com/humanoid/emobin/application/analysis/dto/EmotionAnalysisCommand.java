@@ -5,17 +5,14 @@ import lombok.Getter;
 
 @Getter
 public class EmotionAnalysisCommand {
-    //유저 ID
-    private Long memberId;
-    //분석할 텍스트
+
     private String text;
 
-    public EmotionAnalysisCommand(Long memberId, String text) {
-        this.memberId = memberId;
+    // 클라이언트에서 JSON으로 받을 생성자
+    protected EmotionAnalysisCommand() {}
+
+    // 테스트 용도로만 생성자 필요하면 아래처럼
+    public EmotionAnalysisCommand(String text) {
         this.text = text;
     }
-
-    // 기본 생성자 (JSON 역직렬화용)
-    protected EmotionAnalysisCommand() {}
 }
-

@@ -1,6 +1,8 @@
 package com.humanoid.emobin.domain.member;
 
 import com.humanoid.emobin.domain.commnon.OAuthProvider;
+import com.humanoid.emobin.global.exception.AuthErrorCode;
+import com.humanoid.emobin.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +20,11 @@ public class MemberService {
 
     public void save(Member member) {
         memberRepository.save(member);
+    }
+
+    public String getNickname(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(AuthErrorCode.MEMBER_NOT_FOUND));
+        return member.getNickname();
     }
 }

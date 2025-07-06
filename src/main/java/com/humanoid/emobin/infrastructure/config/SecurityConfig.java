@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()  // 로그인, 리프레시 허용
                         .requestMatchers("/api/test/**").permitAll()  // 테스트 api
+                        .requestMatchers("/test-token/generate").permitAll()                        // 테스트 api
+                        .requestMatchers("/api/analysis").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
