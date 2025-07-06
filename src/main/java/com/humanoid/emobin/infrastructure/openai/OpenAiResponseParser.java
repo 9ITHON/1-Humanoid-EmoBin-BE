@@ -1,49 +1,49 @@
 package com.humanoid.emobin.infrastructure.openai;
-//감정, 원인, 깊이 파싱 로직
+
+
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.humanoid.emobin.domain.analysis.EmotionAnalysis;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import com.humanoid.emobin.domain.analysis.EmotionCategory;
-import com.humanoid.emobin.domain.analysis.EmotionCauseType;
-
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.Arrays;
 
+@Component
+@RequiredArgsConstructor
 public class OpenAiResponseParser {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public EmotionAnalysisResult parse(String json) throws IOException {
-        JsonNode root = objectMapper.readTree(json);
+    public EmotionAnalysis parse(String json) {
+        try {
+            JsonNode root = objectMapper.readTree(json);
 
-        // 예: "슬픔(Sadness)" → "슬픔"
-        String emotionRaw = root.get("emotion").asText();
-        String baseEmotion = extractBaseEmotion(emotionRaw);
-        String message = root.get("message").asText();
-        EmotionCategory emotion = EmotionCategory.fromLabel(baseEmotion);
+            String emotion = root.path("emotion").asText(null);
 
-        List<EmotionCauseType> causes = Arrays.stream(root.get("causes")
-                        .findValuesAsText(""))
-                .map(EmotionCauseType::fromLabel)
-                .collect(Collectors.toList());
+            // causes
+            JsonNode causesNode = root.path("causes");
+            List<String> causes = objectMapper.convertValue(causesNode, List.class);
 
-        double depth = root.get("emotionDepth").asDouble();
-        double temperature = root.get("temperature").asDouble();
+            // causeDescriptions
+            JsonNode descriptionsNode = root.path("causeDescriptions");
+            List<String> causeDescriptions = objectMapper.convertValue(descriptionsNode, List.class);
 
-        return new EmotionAnalysisResult(
-                nickname,
-                emotion,
-                causes,
-                message,
-                daily_temperature,
-                monthly_temperature);
-    }
+            double depth = root.path("emotionDepth").asDouble(0.0);
+            double temperature = root.path("temperature").asDouble(0.0);
+            String message = root.path("message").asText("");
 
-    private String extractBaseEmotion(String label) {
-        int idx = label.indexOf("(");
-        return idx != -1 ? label.substring(0, idx) : label;
+            return new EmotionAnalysis(
+                    emotion,
+                    causes,
+                    depth,
+                    temperature,
+                    causeDescriptions,
+                    message
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("GPT 응답 파싱 실패: " + e.getMessage());
+        }
     }
 }

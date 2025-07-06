@@ -3,7 +3,7 @@ spring:
     name: emobin
 
   datasource:
-    url: jdbc:h2:tcp:${H2_DB_PATH}
+    url: jdbc:h2:mem:testdb  # 또는 tcp://localhost/~/test
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -18,6 +18,3 @@ spring:
       enabled: true
       path: /h2-console
 
-  redis:
-    host:${REDIS_HOST}
-    port:${REDIS_PORT}

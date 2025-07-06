@@ -37,21 +37,26 @@ def preprocess(text):
 def gpt_analyze_emotion_and_causes(text):
     prompt = f"""다음 문장에서 감정과 감정의 원인을 분석해 주세요.
 
-[감정 라벨] 중에서 가장 적절한 하나를 선택하세요:
-{', '.join(emotion_labels)}
+   [감정 라벨] 중에서 가장 적절한 하나를 선택하세요:
+   {', '.join(emotion_labels)}
 
-[감정 원인 라벨] 중에서 해당 문장에 가장 관련 있는 2가지를 골라주세요:
-{', '.join(cause_labels)}
+   [감정 원인 라벨] 중에서 해당 문장에 가장 관련 있는 2가지를 골라주세요:
+   {', '.join(cause_labels)}
 
-또한 감정의 깊이를 1.0에서 10.0 사이의 소수점 첫째 자리까지로 정수/소수를 포함해 추정해 주세요.
+   또한 감정의 깊이를 1.0에서 10.0 사이의 소수점 첫째 자리까지로 정수/소수를 포함해 추정해 주세요.
 
-문장: "{text}"
+   그리고 선택된 감정 원인 각각에 대해 1문장 정도의 설명을 제공해주세요.
+   (감정 원인 설명1, 감정 원인 설명2 형식으로 출력해주세요)
 
-출력 예시:
-감정: 슬픔(Sadness)
-감정 원인: 자기개념 및 자존감, 대인관계 요인
-감정 깊이: 7.3
-사용자에게 전하는 한마디: "그런일이 있었구나 이런 부분에서 너의 감정이 많이 안 좋을 것 같네"
+   문장: "{text}"
+
+   출력 예시:
+   감정: 슬픔(Sadness)
+   감정 원인: 자기개념 및 자존감, 대인관계 요인
+   감정 깊이: 7.3
+   감정 원인 설명1: "자신을 부정적으로 평가하며 무력감을 느낀 것으로 보입니다."
+   감정 원인 설명2: "인간관계에서 지속적인 거절감을 느낀 경험이 영향을 미쳤습니다."
+   사용자에게 전하는 한마디: "요즘 많이 지치셨죠. 당신의 감정은 소중합니다."
 """
     try:
         response = client.chat.completions.create(
@@ -72,6 +77,7 @@ def parse_result(result_text):
         lines = result_text.split('\n')
         emotion = ""
         causes = []
+        cause_descriptions = []
         depth = None
         temperature = 0.0
         message = ""
@@ -87,6 +93,10 @@ def parse_result(result_text):
                     depth = round(float(depth_str), 1)
                 except:
                     depth = None
+            elif line.startswith("감정 원인 설명1:"):
+                cause_descriptions.append(line.replace("감정 원인 설명1:", "").strip().strip('"'))
+            elif line.startswith("감정 원인 설명2:"):
+                cause_descriptions.append(line.replace("감정 원인 설명2:", "").strip().strip('"'))
             elif line.startswith("사용자에게 전하는 한마디:"):
                 message = line.replace("사용자에게 전하는 한마디:", "").strip().strip('"')
 
@@ -108,6 +118,7 @@ def parse_result(result_text):
         return {
             "emotion": emotion,
             "causes": causes,
+            "causeDescriptions": cause_descriptions,
             "emotionDepth": depth,
             "temperature": temperature,
             "message": message
