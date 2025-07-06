@@ -27,7 +27,7 @@ jobs:
       - name: Check JAR and run.sh
         run: |
           ls -l build/libs/
-          ls -l src/
+          ls -l run.sh
 
       - name: Upload artifacts to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -37,9 +37,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             build/libs/emobin-0.0.1-SNAPSHOT.jar
-            src/run.sh
+            run.sh
           target: ~/deploy
-          strip_components: 1
+          strip_components: 0
 
       - name: SSH into EC2 and restart app
         uses: appleboy/ssh-action@master
