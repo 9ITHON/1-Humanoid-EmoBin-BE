@@ -21,10 +21,15 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
-      - name: Build with Gradle (test 포함)
+      - name: Build with Gradle
         run: ./gradlew clean build
 
-      - name: Upload artifacts to EC2 with strip_components
+      - name: Check JAR and run.sh
+        run: |
+          ls -l build/libs/
+          ls -l src/
+
+      - name: Upload artifacts to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -32,11 +37,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
             build/libs/emobin-0.0.1-SNAPSHOT.jar
-            src/main/java/com/humanoid/emobin/infrastructure/python/analyze.py
-            src/main/java/com/humanoid/emobin/infrastructure/python/analyze_core.py
-            run.sh
+            src/run.sh
           target: ~/deploy
-          strip_components: 4
+          strip_components: 1
 
       - name: SSH into EC2 and restart app
         uses: appleboy/ssh-action@master
