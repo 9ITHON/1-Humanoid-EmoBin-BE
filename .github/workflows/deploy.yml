@@ -53,8 +53,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           source: |
-            build/libs/emobin-0.0.1-SNAPSHOT.jar
-            run.sh
+            ./build/libs/emobin-0.0.1-SNAPSHOT.jar
+            ./run.sh
           target: ~/deploy
           strip_components: 0
 
