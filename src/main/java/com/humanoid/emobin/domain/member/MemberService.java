@@ -15,4 +15,8 @@ public class MemberService {
     public Optional<Member> findByIdAndProvider(Long id, OAuthProvider provider) {
         return memberRepository.findByOauthIdAndOauthProvider(id, provider);
     }
+
+    public void save(Member member) {
+        memberRepository.save(member);
+    }
 }

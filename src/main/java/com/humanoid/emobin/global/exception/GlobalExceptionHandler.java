@@ -13,4 +13,11 @@ public class GlobalExceptionHandler {
         ErrorResponse response = new ErrorResponse(errorCode.getCode(), errorCode.getMessage());
         return ResponseEntity.status(errorCode.getStatus()).body(response);
     }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleMemberNotFoundException(MemberNotFoundException ex) {
+        ErrorCode errorCode = ex.getErrorCode();
+        ErrorResponse response = new ErrorResponse(errorCode.getCode(), errorCode.getMessage(), ex.getOAuthLoginFailureInfo());
+        return ResponseEntity.status(errorCode.getStatus()).body(response);
+    }
 }

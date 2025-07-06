@@ -1,19 +1,19 @@
 package com.humanoid.emobin.application.auth;
 
-import com.humanoid.emobin.application.auth.dto.AccessTokenResponse;
-import com.humanoid.emobin.application.auth.dto.UserInfo;
+import com.humanoid.emobin.application.auth.dto.*;
 import com.humanoid.emobin.domain.commnon.OAuthProvider;
 import com.humanoid.emobin.domain.member.Member;
 import com.humanoid.emobin.domain.member.MemberService;
-import com.humanoid.emobin.application.auth.dto.LoginResponse;
 import com.humanoid.emobin.global.exception.CustomException;
 import com.humanoid.emobin.global.exception.AuthErrorCode;
+import com.humanoid.emobin.global.exception.MemberNotFoundException;
 import com.humanoid.emobin.infrastructure.jwt.JwtProvider;
 import com.humanoid.emobin.infrastructure.oauth.KakaoOAuthClient;
 import com.humanoid.emobin.infrastructure.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final KakaoOAuthClient kakaoOAuthClient;
@@ -31,16 +32,19 @@ public class AuthService {
     @Value("${jwt.refresh-token-validity}")
     private Long REFRESH_TOKEN_EXPIRE_TIME;
 
+    @Value("${jwt.access-token-validity}")
+    private Long ACCESS_TOKEN_EXPIRE_TIME;
+
 
 
     public LoginResponse authenticateKakaoUser(String accessTokenFromKakao) {
-        UserInfo userInfo = kakaoOAuthClient.getUserInfo(accessTokenFromKakao);
+        TemporaryMemberInfo memberInfo = kakaoOAuthClient.getUserInfo(accessTokenFromKakao);
 
-        Long id = userInfo.getOauthId();
-        OAuthProvider provider = userInfo.getOAuthProvider();
+        Long id = memberInfo.getOauthId();
+        OAuthProvider provider = memberInfo.getOAuthProvider();
 
         Optional<Member> optionalMember = memberService.findByIdAndProvider(id, provider);
-        if (optionalMember.isPresent()) {
+        if (optionalMember.isPresent()) { //기존 회원
             Long memberId = optionalMember.get().getId();
 
             String accessToken = jwtProvider.createAccessToken(memberId);
@@ -48,9 +52,10 @@ public class AuthService {
 
             redisService.setData("refresh:" + memberId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
             return new LoginResponse(accessToken, refreshToken);
-        } else {
-            //redisService.cacheUserInfo(userInfo);
-            throw new CustomException(AuthErrorCode.MEMBER_NOT_FOUND);
+        } else { //신규 회원
+            redisService.setData("temp-oauth:" + id + ":" + provider, memberInfo, ACCESS_TOKEN_EXPIRE_TIME);
+            throw new MemberNotFoundException(AuthErrorCode.MEMBER_NOT_FOUND,
+                    new OAuthLoginFailureInfo(id, provider, memberInfo.getNickname()));
         }
     }
 
@@ -100,5 +105,37 @@ public class AuthService {
         } else if (!refreshToken.equals(savedRefresh)) {
             throw new CustomException(AuthErrorCode.INVALID_TOKEN);
         }
+    }
+
+    public LoginResponse signup(SignupRequest request) {
+        Long oauthId = request.getOauthId();
+        OAuthProvider oAuthProvider = request.getOAuthProvider();
+        String name = "temp-oauth:" + oauthId + ":" + oAuthProvider;
+
+
+
+        TemporaryMemberInfo data = (TemporaryMemberInfo) redisService.getData(name);
+
+
+        if (data == null) {
+            throw new CustomException(AuthErrorCode.TEMP_MEMBER_NOT_FOUND);
+        }
+
+        Member member = new Member();
+        member.setGender(request.getGender());
+        member.setBirthdate(request.getBirthdate());
+        member.setNickname(request.getNickname());
+        member.setOauthId(data.getOauthId());
+        member.setOauthProvider(data.getOAuthProvider());
+        member.setProfile(data.getProfile());
+        memberService.save(member);
+
+        Long memberId = member.getId();
+
+        String accessToken = jwtProvider.createAccessToken(memberId);
+        String refreshToken = jwtProvider.createRefreshToken(memberId);
+
+        redisService.setData("refresh:" + memberId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        return new LoginResponse(accessToken, refreshToken);
     }
 }

@@ -4,12 +4,14 @@ import com.humanoid.emobin.domain.commnon.Gender;
 import com.humanoid.emobin.domain.commnon.OAuthProvider;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 
 @Entity
 @Getter
+@Setter
 public class Member {
     @Id @GeneratedValue
     @Column(name = "member_id")

@@ -2,7 +2,9 @@ package com.humanoid.emobin.presentation.auth;
 
 import com.humanoid.emobin.application.auth.AuthService;
 import com.humanoid.emobin.application.auth.dto.AccessTokenResponse;
+import com.humanoid.emobin.application.auth.dto.LoginResponse;
 import com.humanoid.emobin.application.auth.dto.RefreshTokenRequest;
+import com.humanoid.emobin.application.auth.dto.SignupRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +16,10 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/singup")
-    public ResponseEntity<?> signup() {
-        return null;
+    @PostMapping("/signup")
+    public ResponseEntity<LoginResponse> signup(@RequestBody SignupRequest request) {
+        LoginResponse response = authService.signup(request);
+        return ResponseEntity.status(200).body(response);
     }
 
     @PostMapping("/logout")

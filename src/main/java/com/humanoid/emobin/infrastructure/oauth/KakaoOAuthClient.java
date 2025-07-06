@@ -1,7 +1,7 @@
 package com.humanoid.emobin.infrastructure.oauth;
 
 
-import com.humanoid.emobin.application.auth.dto.UserInfo;
+import com.humanoid.emobin.application.auth.dto.TemporaryMemberInfo;
 import com.humanoid.emobin.application.auth.dto.KakaoUserInfoResponse;
 import com.humanoid.emobin.application.auth.dto.KakaoUserInfoResponse.KakaoAccount.Profile;
 import com.humanoid.emobin.domain.commnon.OAuthProvider;
@@ -21,7 +21,7 @@ public class KakaoOAuthClient {
 
     private static final String KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
 
-    public UserInfo getUserInfo(String accessToken) {
+    public TemporaryMemberInfo getUserInfo(String accessToken) {
         KakaoUserInfoResponse userInfo = WebClient.create(KAUTH_USER_URL_HOST)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -38,7 +38,7 @@ public class KakaoOAuthClient {
 
         Profile profile = userInfo.getKakaoAccount().getProfile();
 
-        return new UserInfo(userInfo.getId(),
+        return new TemporaryMemberInfo(userInfo.getId(),
                 OAuthProvider.KAKAO,
                 profile.getNickName(),
                 profile.getProfileImageUrl());
