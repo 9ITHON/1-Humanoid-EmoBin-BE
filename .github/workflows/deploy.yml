@@ -1,0 +1,78 @@
+name: Deploy Emobin Backend
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for Gradle
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: ✅ JAR 파일 존재 확인
+        run: |
+          echo ":: 빌드 결과 확인 ::"
+          if [ ! -f "build/libs/emobin-0.0.1-SNAPSHOT.jar" ]; then
+            echo "[ERROR] JAR 파일이 존재하지 않습니다."
+            exit 1
+          else
+            echo "[OK] JAR 파일 존재 확인 완료"
+            ls -al build/libs/
+          fi
+
+      - name: ✅ run.sh 존재 확인
+        run: |
+          echo ":: run.sh 확인 ::"
+          if [ ! -f "run.sh" ]; then
+            echo "[ERROR] run.sh 파일이 존재하지 않습니다."
+            exit 1
+          else
+            echo "[OK] run.sh 파일 존재 확인 완료"
+            ls -al run.sh
+          fi
+
+      - name: 📦 EC2로 JAR 파일 업로드
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: ./build/libs/emobin-0.0.1-SNAPSHOT.jar
+          target: ~/deploy
+          strip_components: 0
+
+      - name: 📦 EC2로 run.sh 업로드
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: ./run.sh
+          target: ~/deploy
+          strip_components: 0
+
+      - name: 🚀 EC2에서 앱 재시작
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/deploy
+            chmod +x run.sh
+            ./run.sh
