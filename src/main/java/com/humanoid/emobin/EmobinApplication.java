@@ -14,6 +14,9 @@ public class EmobinApplication {
 				.load();
 
 		System.setProperty("H2_DB_PATH", dotenv.get("H2_DB_PATH"));
+		System.setProperty("REDIS_HOST", dotenv.get("REDIS_HOST"));
+		System.setProperty("REDIS_PORT", dotenv.get("REDIS_PORT"));
+		System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET"));
 
 		SpringApplication.run(EmobinApplication.class, args);
 	}

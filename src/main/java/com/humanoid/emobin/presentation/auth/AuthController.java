@@ -1,26 +1,37 @@
 package com.humanoid.emobin.presentation.auth;
 
+import com.humanoid.emobin.application.auth.AuthService;
+import com.humanoid.emobin.application.auth.dto.AccessTokenResponse;
+import com.humanoid.emobin.application.auth.dto.LoginResponse;
+import com.humanoid.emobin.application.auth.dto.RefreshTokenRequest;
+import com.humanoid.emobin.application.auth.dto.SignupRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @PostMapping("/singup")
-    public ResponseEntity<?> signup() {
-        return null;
+    private final AuthService authService;
+
+    @PostMapping("/signup")
+    public ResponseEntity<LoginResponse> signup(@RequestBody SignupRequest request) {
+        LoginResponse response = authService.signup(request);
+        return ResponseEntity.status(200).body(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return null;
+    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String accessToken,
+                                       @RequestBody RefreshTokenRequest request) {
+        authService.logout(accessToken, request.getRefreshToken());
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> reissueAccessToken() {
-        return null;
+    public ResponseEntity<AccessTokenResponse> reissueAccessToken(@RequestBody RefreshTokenRequest request) {
+        AccessTokenResponse response = authService.reissueAccessToken(request.getRefreshToken());
+        return ResponseEntity.status(200).body(response);
     }
 }

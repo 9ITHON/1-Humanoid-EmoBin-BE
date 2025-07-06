@@ -1,10 +1,12 @@
 package com.humanoid.emobin.infrastructure.oauth;
 
 
-import com.humanoid.emobin.application.auth.dto.UserInfo;
+import com.humanoid.emobin.application.auth.dto.TemporaryMemberInfo;
 import com.humanoid.emobin.application.auth.dto.KakaoUserInfoResponse;
 import com.humanoid.emobin.application.auth.dto.KakaoUserInfoResponse.KakaoAccount.Profile;
 import com.humanoid.emobin.domain.commnon.OAuthProvider;
+import com.humanoid.emobin.global.exception.AuthErrorCode;
+import com.humanoid.emobin.global.exception.CustomException;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +21,7 @@ public class KakaoOAuthClient {
 
     private static final String KAUTH_USER_URL_HOST = "https://kapi.kakao.com";
 
-    public UserInfo getUserInfo(String accessToken) {
+    public TemporaryMemberInfo getUserInfo(String accessToken) {
         KakaoUserInfoResponse userInfo = WebClient.create(KAUTH_USER_URL_HOST)
                 .get()
                 .uri(uriBuilder -> uriBuilder
@@ -29,14 +31,14 @@ public class KakaoOAuthClient {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken) // access token 인가
                 .header(HttpHeaders.CONTENT_TYPE, HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RuntimeException("Invalid Parameter")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Internal Server Error")))
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new CustomException(AuthErrorCode.KAKAO_INVALID_TOKEN)))
+                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new CustomException(AuthErrorCode.KAKAO_INTERNAL_ERROR)))
                 .bodyToMono(KakaoUserInfoResponse.class)
                 .block();
 
         Profile profile = userInfo.getKakaoAccount().getProfile();
 
-        return new UserInfo(userInfo.getId(),
+        return new TemporaryMemberInfo(userInfo.getId(),
                 OAuthProvider.KAKAO,
                 profile.getNickName(),
                 profile.getProfileImageUrl());
