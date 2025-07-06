@@ -29,7 +29,7 @@ public class EmotionAnalysisService {
 
         // 3. DB 저장용 엔티티 변환
         EmotionAnalysisEntity entity = EmotionAnalysisEntity.from(
-                command.getUserId(),
+                command.getmemberId(),
                 analysis.getEmotion(),
                 analysis.getCauses(),
                 analysis.getEmotionDepth(),
