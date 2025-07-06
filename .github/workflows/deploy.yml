@@ -46,19 +46,27 @@ jobs:
             ls -al run.sh
           fi
 
-      - name: Upload artifacts to EC2
+      - name: 📦 EC2로 JAR 파일 업로드
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: |
-            ./build/libs/emobin-0.0.1-SNAPSHOT.jar
-            ./run.sh
+          source: ./build/libs/emobin-0.0.1-SNAPSHOT.jar
           target: ~/deploy
           strip_components: 0
 
-      - name: SSH into EC2 and restart app
+      - name: 📦 EC2로 run.sh 업로드
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: ./run.sh
+          target: ~/deploy
+          strip_components: 0
+
+      - name: 🚀 EC2에서 앱 재시작
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
