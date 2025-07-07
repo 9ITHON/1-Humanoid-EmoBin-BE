@@ -1,14 +1,13 @@
 package com.humanoid.emobin.application.analysis;
 
 import com.humanoid.emobin.application.analysis.dto.EmotionAnalysisCommand;
-import com.humanoid.emobin.application.analysis.dto.EmotionAnalysisResult;
 import com.humanoid.emobin.domain.analysis.EmotionAnalysis;
 import com.humanoid.emobin.domain.emotioncauses.EmotionCauseEntity;
 import com.humanoid.emobin.domain.emotioncauses.EmotionCauseRepository;
 import com.humanoid.emobin.domain.emotionhistory.EmotionHistoryEntity;
 import com.humanoid.emobin.domain.emotionhistory.EmotionHistoryRepository;
+import com.humanoid.emobin.domain.member.Member;
 import com.humanoid.emobin.domain.member.MemberRepository;
-import com.humanoid.emobin.domain.member.MemberService;
 import com.humanoid.emobin.infrastructure.openai.OpenAiClient;
 import com.humanoid.emobin.infrastructure.openai.OpenAiResponseParser;
 
@@ -28,28 +27,24 @@ public class EmotionAnalysisService {
     private final OpenAiResponseParser openAiResponseParser;
     private final EmotionHistoryRepository emotionHistoryRepository;
     private final EmotionCauseRepository emotionCauseRepository;
-    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
-    public EmotionAnalysisResult analyze(Long memberId, EmotionAnalysisCommand command) throws IOException {
 
-        // 1. 분석 실행 (Python)
+    public EmotionAnalysis analyzeRaw(Long memberId, EmotionAnalysisCommand command) throws IOException {
         String rawResult = openAiClient.analyzeEmotion(command.getText());
-
-        // 2. 결과 파싱
         EmotionAnalysis analysis = openAiResponseParser.parse(rawResult);
 
-        // 3. emotion_history 저장 (memberId는 JWT에서 받은 것 사용)
-        EmotionHistoryEntity history = EmotionHistoryEntity.create(
-                memberId,
-                analysis.getEmotion()
-        );
+        // 감정 이력 및 원인 저장 (기존과 동일)
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID=" + memberId));
+
+        EmotionHistoryEntity history = EmotionHistoryEntity.create(member, analysis.getEmotion());
         emotionHistoryRepository.save(history);
 
-        // 4. emotion_causes 저장
         List<String> causes = analysis.getCauses();
         List<String> descriptions = analysis.getCauseDescriptions();
-
         List<EmotionCauseEntity> causeEntities = new ArrayList<>();
+
         for (int i = 0; i < causes.size(); i++) {
             EmotionCauseEntity causeEntity = EmotionCauseEntity.of(
                     causes.get(i),
@@ -58,20 +53,9 @@ public class EmotionAnalysisService {
             );
             causeEntities.add(causeEntity);
         }
-
         emotionCauseRepository.saveAll(causeEntities);
 
-        // 5. 닉네임 조회 (memberId로)
-        String nickname = memberService.getNickname(memberId);
-
-        // 6. 응답 반환
-        return new EmotionAnalysisResult(
-                nickname,
-                analysis.getEmotion(),
-                analysis.getCauses(),
-                analysis.getMessage(),
-                0.0, // dailyTemperature (임시)
-                0.0  // monthlyTemperature (임시)
-        );
+        return analysis; // 온도 포함된 분석 결과 그대로 반환
     }
+
 }
