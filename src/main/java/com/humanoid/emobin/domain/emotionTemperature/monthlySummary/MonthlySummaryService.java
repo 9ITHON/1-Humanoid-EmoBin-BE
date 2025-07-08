@@ -4,6 +4,8 @@ package com.humanoid.emobin.domain.emotionTemperature.monthlySummary;
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.DailySummaryEntity;
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.repository.DailySummaryRepository;
 import com.humanoid.emobin.domain.member.entity.Member;
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.response.EmotionErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,15 @@ public class MonthlySummaryService {
 
     @Transactional
     public void updateOrCreateMonthlySummary(Member member, LocalDate now) {
+
+        if (member == null) {
+            throw new CustomException(EmotionErrorCode.MEMBER_DATA_NOT_FOUND);
+        }
+        if (now == null) {
+            throw new CustomException(EmotionErrorCode.INVALID_REQUEST);
+        }
+
+
         // 1. 월말이 아닐 경우 중단
         if (!now.equals(now.withDayOfMonth(now.lengthOfMonth()))) {
             return; // 월 마지막 날이 아닐 경우 수행 안 함

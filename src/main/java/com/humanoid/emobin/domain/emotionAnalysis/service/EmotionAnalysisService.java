@@ -10,6 +10,8 @@ import com.humanoid.emobin.domain.member.entity.Member;
 import com.humanoid.emobin.domain.member.repository.MemberRepository;
 
 
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.response.EmotionErrorCode;
 import com.humanoid.emobin.infrastructure.openai.OpenAiClient;
 import com.humanoid.emobin.infrastructure.openai.OpenAiResponseParser;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +35,14 @@ public class EmotionAnalysisService {
 
     public EmotionAnalysis analyzeRaw(Long memberId, EmotionAnalysisCommand command) throws IOException {
         String rawResult = openAiClient.analyzeEmotion(command.getText());
-        EmotionAnalysis analysis = openAiResponseParser.parse(rawResult);
 
-        // 감정 이력 및 원인 저장 (기존과 동일)
+        EmotionAnalysis analysis = openAiResponseParser.parse(rawResult);
+        if (analysis == null || analysis.getEmotion() == null || analysis.getCauses() == null) {
+            throw new CustomException(EmotionErrorCode.NULL_ANALYSIS_RESULT);
+        }
+
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. ID=" + memberId));
+                .orElseThrow(() -> new CustomException(EmotionErrorCode.MEMBER_DATA_NOT_FOUND));
 
         EmotionHistoryEntity history = EmotionHistoryEntity.create(member, analysis.getEmotion());
         emotionHistoryRepository.save(history);
@@ -45,6 +50,9 @@ public class EmotionAnalysisService {
         List<String> causes = analysis.getCauses();
         List<String> descriptions = analysis.getCauseDescriptions();
         List<EmotionCauseEntity> causeEntities = new ArrayList<>();
+        if (causes.size() != descriptions.size()) {
+            throw new CustomException(EmotionErrorCode.INVALID_RESPONSE_FROM_AI);
+        }
 
         for (int i = 0; i < causes.size(); i++) {
             EmotionCauseEntity causeEntity = EmotionCauseEntity.of(
@@ -56,7 +64,7 @@ public class EmotionAnalysisService {
         }
         emotionCauseRepository.saveAll(causeEntities);
 
-        return analysis; // 온도 포함된 분석 결과 그대로 반환
+        return analysis;
     }
 
 }

@@ -3,6 +3,8 @@ package com.humanoid.emobin.domain.emotionTemperature.dailySummary.service;
 
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.DailySummaryEntity;
 import com.humanoid.emobin.domain.member.entity.Member;
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.response.EmotionErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.repository.DailySummaryRepository;
@@ -15,6 +17,15 @@ public class DailySummaryService {
     private final DailySummaryRepository dailySummaryRepository;
 
     public void updateOrCreate(Member member, double analyzedTemperature, LocalDate date) {
+
+        if (member == null) {
+            throw new CustomException(EmotionErrorCode.MEMBER_DATA_NOT_FOUND);
+        }
+
+        if (Double.isNaN(analyzedTemperature) || Double.isInfinite(analyzedTemperature)) {
+            throw new CustomException(EmotionErrorCode.INVALID_ANALYSIS_TEMPERATURE);
+        }
+
         DailySummaryEntity summary = dailySummaryRepository
                 .findByMemberAndLocalDate(member, date)
                 .orElseGet(() -> {

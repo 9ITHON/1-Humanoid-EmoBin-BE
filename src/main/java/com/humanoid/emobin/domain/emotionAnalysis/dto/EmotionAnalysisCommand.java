@@ -1,14 +1,15 @@
 package com.humanoid.emobin.domain.emotionAnalysis.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
 public class EmotionAnalysisCommand {
 
+    @NotBlank(message = "분석할 텍스트는 비어 있을 수 없습니다.")
     private String text;
 
-    // 클라이언트에서 JSON으로 받을 생성자
     protected EmotionAnalysisCommand() {}
 
     public EmotionAnalysisCommand(String text) {

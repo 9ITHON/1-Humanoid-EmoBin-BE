@@ -5,6 +5,10 @@ package com.humanoid.emobin.domain.emotionAnalysis.controller;
 import com.humanoid.emobin.domain.emotionAnalysis.dto.EmotionAnalysisCommand;
 import com.humanoid.emobin.domain.emotionAnalysis.dto.EmotionAnalysisResult;
 import com.humanoid.emobin.domain.emotionAnalysis.service.EmotionAnalysisManager;
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.response.ApiResponse;
+import com.humanoid.emobin.global.response.EmotionErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,11 +24,15 @@ public class EmotionAnalysisController {
     private final EmotionAnalysisManager emotionAnalysisManager;
 
     @PostMapping
-    public ResponseEntity<EmotionAnalysisResult> analyzeEmotion(
+    public ResponseEntity<ApiResponse<EmotionAnalysisResult>> analyzeEmotion(
             @AuthenticationPrincipal Long memberId,
-            @RequestBody EmotionAnalysisCommand command
-    ) throws IOException {
-        EmotionAnalysisResult result = emotionAnalysisManager.analyze(memberId, command);
-        return ResponseEntity.ok(result);
+            @RequestBody @Valid EmotionAnalysisCommand command
+    ) {
+        try {
+            EmotionAnalysisResult result = emotionAnalysisManager.analyze(memberId, command);
+            return ResponseEntity.ok(ApiResponse.success(result));
+        } catch (IOException e) {
+            throw new CustomException(EmotionErrorCode.EMOTION_ANALYSIS_FAILED);
+        }
     }
 }

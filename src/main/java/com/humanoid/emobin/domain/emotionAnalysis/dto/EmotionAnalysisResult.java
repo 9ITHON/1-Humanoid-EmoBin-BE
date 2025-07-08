@@ -30,11 +30,15 @@ public class EmotionAnalysisResult {
             List<String> causes,
             String message
     ) {
+        String finalMessage = (message == null || message.trim().isEmpty())
+                ? "오늘 하루도 고생하셨어요"
+                : message;
+
         return new EmotionAnalysisResult(
                 nickname,
                 emotion,
                 causes,
-                message
+                finalMessage
         );
     }
 }
