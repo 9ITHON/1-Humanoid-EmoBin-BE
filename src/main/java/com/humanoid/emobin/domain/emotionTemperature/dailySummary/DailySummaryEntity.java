@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import com.humanoid.emobin.domain.member.Member;
+import com.humanoid.emobin.domain.member.entity.Member;
 
 @Entity
 @Table(name = "daily_summary")

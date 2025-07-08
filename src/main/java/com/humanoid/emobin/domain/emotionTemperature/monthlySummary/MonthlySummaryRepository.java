@@ -1,6 +1,6 @@
 package com.humanoid.emobin.domain.emotionTemperature.monthlySummary;
 
-import com.humanoid.emobin.domain.member.Member;
+import com.humanoid.emobin.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
 package com.humanoid.emobin;
 
-import com.humanoid.emobin.domain.member.Member;
-import com.humanoid.emobin.domain.member.MemberRepository;
+import com.humanoid.emobin.domain.member.entity.Member;
+import com.humanoid.emobin.domain.member.repository.MemberRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package com.humanoid.emobin.domain.emotionTemperature.dailySummary.service;
 
 
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.DailySummaryEntity;
-import com.humanoid.emobin.domain.member.Member;
+import com.humanoid.emobin.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.repository.DailySummaryRepository;

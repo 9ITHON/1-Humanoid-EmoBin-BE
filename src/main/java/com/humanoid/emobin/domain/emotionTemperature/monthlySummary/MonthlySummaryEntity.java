@@ -1,6 +1,6 @@
 package com.humanoid.emobin.domain.emotionTemperature.monthlySummary;
 
-import com.humanoid.emobin.domain.member.Member;
+import com.humanoid.emobin.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
 package com.humanoid.emobin.domain.emotionhistory;
 
-import com.humanoid.emobin.domain.member.Member;
+import com.humanoid.emobin.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 

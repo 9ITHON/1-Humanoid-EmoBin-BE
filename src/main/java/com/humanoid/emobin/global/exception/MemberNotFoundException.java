@@ -1,6 +1,6 @@
 package com.humanoid.emobin.global.exception;
 
-import com.humanoid.emobin.application.auth.dto.OAuthLoginFailureInfo;
+import com.humanoid.emobin.auth.dto.OAuthLoginFailureInfo;
 import lombok.Getter;
 
 @Getter

@@ -2,7 +2,7 @@ package com.humanoid.emobin.domain.emotionTemperature.dailySummary.repository;
 
 
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.DailySummaryEntity;
-import com.humanoid.emobin.domain.member.Member;
+import com.humanoid.emobin.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

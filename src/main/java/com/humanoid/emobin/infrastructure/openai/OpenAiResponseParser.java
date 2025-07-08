@@ -3,7 +3,7 @@ package com.humanoid.emobin.infrastructure.openai;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.humanoid.emobin.domain.analysis.EmotionAnalysis;
+import com.humanoid.emobin.domain.emotionAnalysis.entity.EmotionAnalysis;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
