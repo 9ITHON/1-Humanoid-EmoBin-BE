@@ -17,7 +17,7 @@ public class EmobinApplication {
 		System.setProperty("REDIS_HOST", dotenv.get("REDIS_HOST"));
 		System.setProperty("REDIS_PORT", dotenv.get("REDIS_PORT"));
 		System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET"));
-
+		System.setProperty("MYSQL_SECRET", dotenv.get("MYSQL_SECRET"));
 		SpringApplication.run(EmobinApplication.class, args);
 	}
 

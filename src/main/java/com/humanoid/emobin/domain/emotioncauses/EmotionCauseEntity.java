@@ -26,6 +26,11 @@ public class EmotionCauseEntity {
     private EmotionHistoryEntity emotionHistory;
 
     public static EmotionCauseEntity of(String name, String description, EmotionHistoryEntity history) {
+
+        if (name == null || description == null || history == null) {
+            throw new IllegalArgumentException("모든 인자는 필수입니다.");
+        }
+
         return EmotionCauseEntity.builder()
                 .emotionCausesName(name)
                 .description(description)

@@ -24,27 +24,17 @@ public class EmotionAnalysisResult {
     // 사용자에게 전달할 한마디 메시지
     private String message;
 
-    // 해당 날의 감정 온도
-    private double dailyTemperature;
-
-    // 해당 달의 감정 온도
-    private double monthlyTemperature;
-
     public static EmotionAnalysisResult of(
             String nickname,
             String emotion,
             List<String> causes,
-            String message,
-            double dailyTemperature,
-            double monthlyTemperature
+            String message
     ) {
         return new EmotionAnalysisResult(
                 nickname,
                 emotion,
                 causes,
-                message,
-                dailyTemperature,
-                monthlyTemperature
+                message
         );
     }
 }
