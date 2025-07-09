@@ -77,6 +77,16 @@ jobs:
             ls -al run.sh
           fi
 
+      - name: 📦 EC2로 Python 스크립트 전체 업로드
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: ./src/main/java/com/humanoid/emobin/infrastructure/python/
+          target: ~/deploy/python
+          strip_components: 6
+
       - name: 📦 EC2로 JAR 파일 업로드
         uses: appleboy/scp-action@v0.1.7
         with:
