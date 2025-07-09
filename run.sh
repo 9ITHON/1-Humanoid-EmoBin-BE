@@ -6,6 +6,17 @@ LOG_FILE="$LOG_DIR/app.log"
 
 echo "[ Spring Boot Application restart ]"
 
+# .env 파일 로드
+ENV_FILE="/home/ubuntu/deploy/.env"
+if [ -f "$ENV_FILE" ]; then
+  echo "[INFO] .env 파일을 불러옵니다: $ENV_FILE"
+  set -a
+  source "$ENV_FILE"
+  set +a
+else
+  echo "[WARN] .env 파일이 존재하지 않습니다. 환경변수가 누락될 수 있습니다."
+fi
+
 # JAR 존재 확인
 if [ ! -f "$JAR_PATH" ]; then
   echo "[ERROR] JAR 파일이 존재하지 않습니다: $JAR_PATH"
@@ -48,4 +59,3 @@ else
 fi
 
 echo "[Success] App started. Use: tail -f $LOG_FILE"
-
