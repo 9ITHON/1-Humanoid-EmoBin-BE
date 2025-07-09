@@ -68,8 +68,8 @@ def gpt_analyze_emotion_and_causes(text):
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print("분석 실패")
-        return f"GPT 호출 실패: {e}"
+        return json.dumps({"error": f"GPT 호출 실패: {str(e)}"})
+
 
 
 def parse_result(result_text):
