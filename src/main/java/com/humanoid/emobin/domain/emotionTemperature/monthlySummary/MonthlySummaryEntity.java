@@ -21,6 +21,7 @@ public class MonthlySummaryEntity {
     private Member member;
 
     //몇월 인지 기입
+    @Column(name = "summary_month")
     private LocalDate month;
     //해당 월의 감정온도 매월 1일 기준으로 계산
     //일별 감정온도 테이블의 SUM후에 SIZE로 나누어 계산

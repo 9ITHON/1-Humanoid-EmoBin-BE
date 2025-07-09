@@ -18,6 +18,8 @@ public class EmobinApplication {
 		System.setProperty("REDIS_PORT", dotenv.get("REDIS_PORT"));
 		System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET"));
 		System.setProperty("MYSQL_SECRET", dotenv.get("MYSQL_SECRET"));
+		System.setProperty("PYTHON_SCRIPT_PATH", dotenv.get("PYTHON_SCRIPT_PATH"));
+		System.setProperty("PYTHON_EXEC_PATH", dotenv.get("PYTHON_EXEC_PATH"));
 		SpringApplication.run(EmobinApplication.class, args);
 	}
 
