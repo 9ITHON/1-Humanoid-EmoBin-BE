@@ -45,10 +45,12 @@ jobs:
 
       - name: Set test environment variables
         run: |
-          echo "MYSQL_SECRET=root" >> $GITHUB_ENV
-          echo "REDIS_HOST=localhost" >> $GITHUB_ENV
-          echo "REDIS_PORT=6379" >> $GITHUB_ENV
-          echo "asdgyiDRWGiygefhka132asvtuauisbcnGnbW8i0bE7q7Dnb+9WfAoUoPZDZRM8cJr+5C1tuGFo=" >> $GITHUB_ENV
+          echo "MYSQL_SECRET=${{ secrets.MYSQL_SECRET }}" >> $GITHUB_ENV
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> $GITHUB_ENV
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> $GITHUB_ENV
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+          echo "H2_DB_PATH=${{ secrets.H2_DB_PATH }}" >> $GITHUB_ENV
 
       - name: Build with Gradle (with tests)
         run: ./gradlew clean build -Dspring.profiles.active=ci
