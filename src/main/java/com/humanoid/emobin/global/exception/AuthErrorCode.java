@@ -14,6 +14,7 @@ public enum AuthErrorCode implements ErrorCode {
     MALFORMED_TOKEN("MALFORMED_TOKEN", 401, "손상되었거나 잘못 구성된 JWT 토큰입니다."),
     INVALID_TOKEN("INVALID_TOKEN",401,"유효하지 않은 토큰입니다."),
     TEMP_MEMBER_NOT_FOUND("TEMP_MEMBER_NOT_FOUND", 410, "임시 회원 정보를 찾을 수 없습니다. (만료 또는 유효하지 않음)"),
+    MEMBER_ALREADY_DELETED("USER_ALREADY_DELETED", 409, "이미 탈퇴한 계정입니다. 복구를 원하시면 고객센터로 문의해주세요."),
 
     //카카오 인증 관련
     KAKAO_INVALID_TOKEN("KAKAO_OAUTH_401", 401, "카카오 액세스 토큰이 유효하지 않습니다."),
