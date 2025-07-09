@@ -43,6 +43,6 @@ jwt:
   refresh-token-validity: 1209600000  # 14일
 
 env:
-  PYTHON_SCRIPT_PATH: /home/ubuntu/deploy/python/emobin/infrastructure/python/analyze.py
-  PYTHON_EXEC_PATH: /usr/bin/python3
+  PYTHON_SCRIPT_PATH: ${PYTHON_SCRIPT_PATH}
+  PYTHON_EXEC_PATH: ${PYTHON_EXEC_PATH}
 
