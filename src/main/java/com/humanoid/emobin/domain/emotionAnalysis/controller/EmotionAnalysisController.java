@@ -28,6 +28,7 @@ public class EmotionAnalysisController {
             @AuthenticationPrincipal Long memberId,
             @RequestBody @Valid EmotionAnalysisCommand command
     ) {
+        System.out.println("Received memberId: " + memberId); 
         try {
             EmotionAnalysisResult result = emotionAnalysisManager.analyze(memberId, command);
             return ResponseEntity.ok(ApiResponse.success(result));
