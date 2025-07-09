@@ -1,5 +1,6 @@
 package com.humanoid.emobin.infrastructure.openai;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -10,12 +11,15 @@ import java.util.stream.Collectors;
 @Component
 public class OpenAiClient {
 
-      public String analyzeEmotion(String inputText) throws IOException {
-        String pythonExecutable = "python3";
-        String scriptPath = System.getenv("PYTHON_SCRIPT_PATH");
+    @Value("${env.PYTHON_SCRIPT_PATH}")
+    private String scriptPath;
 
-        if (scriptPath == null) {
-            throw new IllegalStateException("Missing PYTHON_SCRIPT_PATH environment variable");
+    @Value("${env.PYTHON_EXEC_PATH}")
+    private String pythonExecutable;
+
+    public String analyzeEmotion(String inputText) throws IOException {
+        if (scriptPath == null || pythonExecutable == null) {
+            throw new IllegalStateException("Missing PYTHON environment variables");
         }
 
         System.out.println("[INFO] Python 실행 경로: " + pythonExecutable);
@@ -45,11 +49,10 @@ public class OpenAiClient {
             throw new IOException("Python script interrupted during execution", e);
         }
 
-        if (output.isBlank()) {
+        if (output == null || output.isBlank()) {
             throw new IOException("Python script returned empty output");
         }
 
         return output;
     }
-
 }
