@@ -48,7 +48,7 @@ jobs:
           echo "MYSQL_SECRET=root" >> $GITHUB_ENV
           echo "REDIS_HOST=localhost" >> $GITHUB_ENV
           echo "REDIS_PORT=6379" >> $GITHUB_ENV
-          echo "JWT_SECRET=dummy-secret" >> $GITHUB_ENV
+          echo "asdgyiDRWGiygefhka132asvtuauisbcnGnbW8i0bE7q7Dnb+9WfAoUoPZDZRM8cJr+5C1tuGFo=" >> $GITHUB_ENV
 
       - name: Build with Gradle (with tests)
         run: ./gradlew clean build -Dspring.profiles.active=ci
