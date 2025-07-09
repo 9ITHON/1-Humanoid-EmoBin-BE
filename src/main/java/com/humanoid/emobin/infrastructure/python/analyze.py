@@ -8,8 +8,13 @@ if __name__ == "__main__":
         print(json.dumps({"error": "No input text provided"}))
         sys.exit(1)
 
-    text = sys.argv[1]
-    cleaned = preprocess(text)
-    result_text = gpt_analyze_emotion_and_causes(cleaned)
-    result_json = parse_result(result_text)
-    print(json.dumps(result_json, ensure_ascii=False))
+    try:
+        text = sys.argv[1]
+        cleaned = preprocess(text)
+        result_text = gpt_analyze_emotion_and_causes(cleaned)
+        result_json = parse_result(result_text)
+        print(json.dumps(result_json, ensure_ascii=False))
+
+    except Exception as e:
+        print(json.dumps({"error": f"Exception occurred: {str(e)}"}))
+        sys.exit(2)
