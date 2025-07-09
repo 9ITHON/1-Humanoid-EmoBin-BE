@@ -18,9 +18,6 @@ public class OpenAiClient {
     private String pythonExecutable;
 
     public String analyzeEmotion(String inputText) throws IOException {
-        if (scriptPath == null || pythonExecutable == null) {
-            throw new IllegalStateException("Missing PYTHON environment variables");
-        }
 
         System.out.println("[INFO] Python 실행 경로: " + pythonExecutable);
         System.out.println("[INFO] Python 스크립트 경로: " + scriptPath);
@@ -49,7 +46,7 @@ public class OpenAiClient {
             throw new IOException("Python script interrupted during execution", e);
         }
 
-        if (output == null || output.isBlank()) {
+        if (output.isBlank()) {
             throw new IOException("Python script returned empty output");
         }
 
