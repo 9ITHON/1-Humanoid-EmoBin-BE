@@ -16,9 +16,14 @@ public class OpenAiClient {
         String pythonExecutable = "python3";
         String scriptPath = System.getenv("PYTHON_SCRIPT_PATH");
 
-if (scriptPath == null) {
-    throw new IllegalStateException("Missing PYTHON_SCRIPT_PATH environment variable");
-}
+        if (scriptPath == null) {
+            throw new IllegalStateException("Missing PYTHON_SCRIPT_PATH environment variable");
+        }
+
+        System.out.println("[INFO] Python 실행 경로: " + pythonExecutable);
+        System.out.println("[INFO] Python 스크립트 경로: " + scriptPath);
+        System.out.println("[INFO] 입력된 텍스트: " + inputText);
+
         // 2. ProcessBuilder에 정확한 경로 전달
         ProcessBuilder pb = new ProcessBuilder(pythonExecutable, scriptPath, inputText);
 
@@ -32,17 +37,18 @@ if (scriptPath == null) {
         try {
             int exitCode = process.waitFor();
             if (exitCode != 0) {
+                System.out.println("[ERROR] Python script exited with code: " + exitCode);
                 throw new IOException("Python script exited with non-zero code: " + exitCode);
             }
         } catch (InterruptedException e) {
-            // 인터럽트 상태 복원
             Thread.currentThread().interrupt();
-            // 내부에서 로그 찍거나 처리하고, IOException으로 변환하여 던지기
             throw new IOException("Python script interrupted during execution", e);
         }
-        // 5. UTF-8로 출력 읽기
+
+        // 5. UTF-8로 출력 읽기 + 출력 로그 추가
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"))) {
             String output = reader.lines().collect(Collectors.joining());
+            System.out.println("[PYTHON OUTPUT] " + output);  // ✅ 여기서 실제 출력 확인
             if (output.isBlank()) {
                 throw new IOException("Python script returned empty output");
             }
