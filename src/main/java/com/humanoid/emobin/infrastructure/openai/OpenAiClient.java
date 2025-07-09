@@ -13,9 +13,12 @@ public class OpenAiClient {
     public String analyzeEmotion(String inputText) throws IOException {
 
         // 1. 실행할 Python 경로와 스크립트 경로 명확히 지정
-        String pythonExecutable = "venv/Scripts/python";  // macOS/Linux: venv/bin/python
-        String scriptPath = "src/main/java/com/humanoid/emobin/infrastructure/python/analyze.py";
+        String pythonExecutable = "python3";
+        String scriptPath = System.getenv("PYTHON_SCRIPT_PATH");
 
+if (scriptPath == null) {
+    throw new IllegalStateException("Missing PYTHON_SCRIPT_PATH environment variable");
+}
         // 2. ProcessBuilder에 정확한 경로 전달
         ProcessBuilder pb = new ProcessBuilder(pythonExecutable, scriptPath, inputText);
 
