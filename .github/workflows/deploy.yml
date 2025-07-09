@@ -8,6 +8,20 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: emobin_db
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -21,8 +35,23 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
-      - name: Build with Gradle
-        run: ./gradlew clean build
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            nc -z 127.0.0.1 3306 && echo "MySQL is ready" && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Set test environment variables
+        run: |
+          echo "MYSQL_SECRET=root" >> $GITHUB_ENV
+          echo "REDIS_HOST=localhost" >> $GITHUB_ENV
+          echo "REDIS_PORT=6379" >> $GITHUB_ENV
+          echo "JWT_SECRET=dummy-secret" >> $GITHUB_ENV
+
+      - name: Build with Gradle (with tests)
+        run: ./gradlew clean build -Dspring.profiles.active=ci
 
       - name: ✅ JAR 파일 존재 확인
         run: |
