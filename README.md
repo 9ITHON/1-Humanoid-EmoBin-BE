@@ -2,7 +2,7 @@
 ---
 ## ERD(초기 버전-수정 가능)
 ![EmoBin_BE](https://github.com/user-attachments/assets/32ebf410-7079-4b74-8bd7-4b77bd9bcbbd)
-
+ 
 |  테이블 명 | 설명                |
 |---------------------|-------------|
 | `members`     | 사용자 정보 (닉네임, 생년월일, 성별, 프로) 저장 |
