@@ -45,7 +45,11 @@ public class AuthService {
 
         Optional<Member> optionalMember = memberService.findByIdAndProvider(id, provider);
         if (optionalMember.isPresent()) { //기존 회원
-            Long memberId = optionalMember.get().getId();
+            Member member = optionalMember.get();
+            if (member.isDeleted()) { //탈퇴회원이라면
+                throw new CustomException(AuthErrorCode.MEMBER_ALREADY_DELETED);
+            }
+            Long memberId = member.getId();
 
             String accessToken = jwtProvider.createAccessToken(memberId);
             String refreshToken = jwtProvider.createRefreshToken(memberId);
