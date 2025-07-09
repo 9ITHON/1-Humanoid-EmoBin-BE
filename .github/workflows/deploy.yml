@@ -51,6 +51,8 @@ jobs:
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
           echo "H2_DB_PATH=${{ secrets.H2_DB_PATH }}" >> $GITHUB_ENV
+          echo "PYTHON_EXEC_PATH=${{ secrets.PYTHON_EXEC_PATH }}" >> $GITHUB_ENV
+          echo "PYTHON_SCRIPT_PATH=${{ secrets.PYTHON_SCRIPT_PATH }}" >> $GITHUB_ENV
 
       - name: Build with Gradle (with tests)
         run: ./gradlew clean build -Dspring.profiles.active=ci
