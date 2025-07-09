@@ -1,4 +1,6 @@
 #!/bin/bash
+export PYTHON_SCRIPT_PATH=/home/ubuntu/deploy/python/emobin/infrastructure/python/analyze.py
+export PYTHON_EXEC_PATH=/usr/bin/python3
 
 JAR_PATH="/home/ubuntu/deploy/build/libs/emobin-0.0.1-SNAPSHOT.jar"
 LOG_DIR="/home/ubuntu/deploy/logs"
