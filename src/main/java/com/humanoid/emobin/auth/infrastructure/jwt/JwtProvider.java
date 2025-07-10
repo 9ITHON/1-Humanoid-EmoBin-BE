@@ -33,7 +33,7 @@ public class JwtProvider {
         return createToken(memberId, "refresh", REFRESH_TOKEN_EXPIRE_TIME);
     }
 
-    private String createToken(Long memberId, String type, long expireTime) {
+    public String createToken(Long memberId, String type, long expireTime) {
 
         return Jwts.builder()
                 .setSubject(type)
