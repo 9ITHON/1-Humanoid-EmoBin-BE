@@ -1,6 +1,5 @@
 package com.humanoid.emobin.domain.emotionTemperature.monthlySummary;
 
-
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.DailySummaryEntity;
 import com.humanoid.emobin.domain.emotionTemperature.dailySummary.repository.DailySummaryRepository;
 import com.humanoid.emobin.domain.member.entity.Member;

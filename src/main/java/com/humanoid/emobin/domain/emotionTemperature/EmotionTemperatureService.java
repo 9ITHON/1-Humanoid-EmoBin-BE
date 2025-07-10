@@ -34,11 +34,13 @@ public class EmotionTemperatureService {
         } catch (DateTimeException e) {
             throw new CustomException(EmotionErrorCode.INVALID_REQUEST);
         }
+        LocalDate lastMonthlyMonth = monthStart.minusMonths(1);
+
         LocalDate monthEnd = monthStart.withDayOfMonth(monthStart.lengthOfMonth());
 
         // 월간 요약
         MonthlySummaryEntity monthlySummary = monthlySummaryRepository
-                .findByMemberAndMonth(member, monthStart)
+                .findByMemberAndMonth(member, lastMonthlyMonth)
                 .orElse(null); // 없으면 null
 
         // 일간 요약
