@@ -53,6 +53,7 @@ jobs:
           echo "H2_DB_PATH=${{ secrets.H2_DB_PATH }}" >> $GITHUB_ENV
           echo "PYTHON_EXEC_PATH=${{ secrets.PYTHON_EXEC_PATH }}" >> $GITHUB_ENV
           echo "PYTHON_SCRIPT_PATH=${{ secrets.PYTHON_SCRIPT_PATH }}" >> $GITHUB_ENV
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> $GITHUB_ENV
 
       - name: Build with Gradle (with tests)
         run: ./gradlew clean build -Dspring.profiles.active=ci
