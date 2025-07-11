@@ -22,6 +22,7 @@ public class EmobinApplication {
 		System.setProperty("MYSQL_SECRET", dotenv.get("MYSQL_SECRET"));
 		System.setProperty("PYTHON_SCRIPT_PATH", dotenv.get("PYTHON_SCRIPT_PATH"));
 		System.setProperty("PYTHON_EXEC_PATH", dotenv.get("PYTHON_EXEC_PATH"));
+		System.setProperty("KAKAO_CLIENT_ID", dotenv.get("KAKAO_CLIENT_ID"));
 		SpringApplication.run(EmobinApplication.class, args);
 	}
 

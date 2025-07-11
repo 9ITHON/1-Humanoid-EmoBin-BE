@@ -12,10 +12,15 @@ import com.humanoid.emobin.auth.infrastructure.oauth.KakaoOAuthClient;
 import com.humanoid.emobin.auth.infrastructure.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -37,7 +42,8 @@ public class AuthService {
 
 
 
-    public LoginResponse authenticateKakaoUser(String accessTokenFromKakao) {
+    public LoginResponse authenticateKakaoUser(String code) {
+        String accessTokenFromKakao = kakaoOAuthClient.getAccessTokenFromKakao(code);
         TemporaryMemberInfo memberInfo = kakaoOAuthClient.getUserInfo(accessTokenFromKakao);
 
         Long id = memberInfo.getOauthId();
@@ -58,7 +64,7 @@ public class AuthService {
             return new LoginResponse(accessToken, refreshToken);
         } else { //신규 회원
             redisService.setData("temp-oauth:" + id + ":" + provider, memberInfo, ACCESS_TOKEN_EXPIRE_TIME);
-            throw new MemberNotFoundException(AuthErrorCode.MEMBER_NOT_FOUND,
+            throw new MemberNotFoundException(AuthErrorCode.SIGNUP_REQUIRED,
                     new OAuthLoginFailureInfo(id, provider, memberInfo.getNickname()));
         }
     }
@@ -114,11 +120,11 @@ public class AuthService {
     public LoginResponse signup(SignupRequest request) {
         Long oauthId = request.getOauthId();
         OAuthProvider oAuthProvider = request.getOAuthProvider();
-        String name = "temp-oauth:" + oauthId + ":" + oAuthProvider;
+        String key = "temp-oauth:" + oauthId + ":" + oAuthProvider;
 
 
 
-        TemporaryMemberInfo data = (TemporaryMemberInfo) redisService.getData(name);
+        TemporaryMemberInfo data = (TemporaryMemberInfo) redisService.getData(key);
 
 
         if (data == null) {
@@ -139,6 +145,7 @@ public class AuthService {
         String accessToken = jwtProvider.createAccessToken(memberId);
         String refreshToken = jwtProvider.createRefreshToken(memberId);
 
+        redisService.deleteData(key);
         redisService.setData("refresh:" + memberId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
         return new LoginResponse(accessToken, refreshToken);
     }
