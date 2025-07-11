@@ -42,7 +42,11 @@ jwt:
   access-token-validity: 1800000       # 30분
   refresh-token-validity: 1209600000  # 14일
 
-env:
-  PYTHON_SCRIPT_PATH: /home/ubuntu/deploy/python/emobin/infrastructure/python/analyze.py
-  PYTHON_EXEC_PATH: /usr/bin/python3
+movie:
+  api:
+    key: ${MOVIE_API_KEY}
 
+env:
+  PYTHON_EXEC_PATH: /usr/bin/python3
+  PYTHON_ANALYZE_SCRIPT_PATH: /home/ubuntu/deploy/python/emobin/infrastructure/python/analyze.py
+  PYTHON_RECOMMEND_MOVIE_SCRIPT_PATH: /home/ubuntu/deploy/python/emobin/infrastructure/python/movie/recommendMovie.py
