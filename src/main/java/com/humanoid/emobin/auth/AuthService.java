@@ -64,7 +64,7 @@ public class AuthService {
             return new LoginResponse(accessToken, refreshToken);
         } else { //신규 회원
             redisService.setData("temp-oauth:" + id + ":" + provider, memberInfo, ACCESS_TOKEN_EXPIRE_TIME);
-            throw new MemberNotFoundException(AuthErrorCode.MEMBER_NOT_FOUND,
+            throw new MemberNotFoundException(AuthErrorCode.SIGNUP_REQUIRED,
                     new OAuthLoginFailureInfo(id, provider, memberInfo.getNickname()));
         }
     }

@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AuthErrorCode implements ErrorCode {
     //공통 인증 관련
-    MEMBER_NOT_FOUND("MEMBER_NOT_FOUND",202,"사용자가 존재하지 않습니다. (회원 가입 필요)"),
+    SIGNUP_REQUIRED("SIGNUP_REQUIRED",202,"회원 가입이 필요합니다."),
+    MEMBER_NOT_FOUND("MEMBER_NOT_FOUND",404,"사용자가 존재하지 않습니다."),
     TOKEN_EXPIRED("TOKEN_EXPIRED", 401, "토큰이 만료되었습니다."),
     TOKEN_BLACKLISTED("TOKEN_BLACKLISTED", 401, "사용할 수 없는 토큰입니다."),
     TOKEN_NOT_FOUND("TOKEN_NOT_FOUND", 401, "토큰이 존재하지 않습니다."),
