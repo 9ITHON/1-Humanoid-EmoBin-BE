@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Component
 public class OpenAiClient {
 
-    @Value("${env.PYTHON_SCRIPT_PATH}")
+    @Value("${env.PYTHON_ANALYZE_SCRIPT_PATH}")
     private String scriptPath;
 
     @Value("${env.PYTHON_EXEC_PATH}")
