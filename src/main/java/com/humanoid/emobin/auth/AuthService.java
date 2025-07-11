@@ -120,11 +120,11 @@ public class AuthService {
     public LoginResponse signup(SignupRequest request) {
         Long oauthId = request.getOauthId();
         OAuthProvider oAuthProvider = request.getOAuthProvider();
-        String name = "temp-oauth:" + oauthId + ":" + oAuthProvider;
+        String key = "temp-oauth:" + oauthId + ":" + oAuthProvider;
 
 
 
-        TemporaryMemberInfo data = (TemporaryMemberInfo) redisService.getData(name);
+        TemporaryMemberInfo data = (TemporaryMemberInfo) redisService.getData(key);
 
 
         if (data == null) {
@@ -145,6 +145,7 @@ public class AuthService {
         String accessToken = jwtProvider.createAccessToken(memberId);
         String refreshToken = jwtProvider.createRefreshToken(memberId);
 
+        redisService.deleteData(key);
         redisService.setData("refresh:" + memberId, refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
         return new LoginResponse(accessToken, refreshToken);
     }
