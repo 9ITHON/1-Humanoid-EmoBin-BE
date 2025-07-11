@@ -46,3 +46,6 @@ env:
   PYTHON_SCRIPT_PATH: /home/ubuntu/deploy/python/emobin/infrastructure/python/analyze.py
   PYTHON_EXEC_PATH: /usr/bin/python3
 
+kakao:
+  client_id: ${KAKAO_CLIENT_ID}
+

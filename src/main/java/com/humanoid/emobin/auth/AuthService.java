@@ -12,10 +12,15 @@ import com.humanoid.emobin.auth.infrastructure.oauth.KakaoOAuthClient;
 import com.humanoid.emobin.auth.infrastructure.redis.RedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
@@ -37,7 +42,8 @@ public class AuthService {
 
 
 
-    public LoginResponse authenticateKakaoUser(String accessTokenFromKakao) {
+    public LoginResponse authenticateKakaoUser(String code) {
+        String accessTokenFromKakao = kakaoOAuthClient.getAccessTokenFromKakao(code);
         TemporaryMemberInfo memberInfo = kakaoOAuthClient.getUserInfo(accessTokenFromKakao);
 
         Long id = memberInfo.getOauthId();
