@@ -16,7 +16,6 @@ import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
-@Profile("local")
 public class InitDB {
 
     private final InitService service;
@@ -32,22 +31,9 @@ public class InitDB {
     @RequiredArgsConstructor
     static class InitService {
         private final EntityManager em;
-        private final JwtProvider jwtProvider;
-        private final RedisService redisService;
-        public void dbInit1() {
-            Member member = new Member();
-            member.setBirthdate(LocalDate.of(2025, 7, 10));
-            member.setGender(Gender.MALE);
-            member.setDeleted(true);
-            member.setNickname("테스트계정");
-            member.setOauthId(12345L);
-            member.setOauthProvider(OAuthProvider.KAKAO);
-            member.setProfile("test.example");
-            em.persist(member);
 
-            Long id = member.getId();
-            String refreshToken = jwtProvider.createRefreshToken(id);
-            redisService.setData("refresh:" + id, refreshToken, 1209600000);
+        public void dbInit1() {
+
         }
     }
 }
