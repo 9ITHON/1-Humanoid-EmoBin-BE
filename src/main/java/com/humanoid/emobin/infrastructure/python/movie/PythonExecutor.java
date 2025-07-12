@@ -1,5 +1,7 @@
 package com.humanoid.emobin.infrastructure.python.movie;
 
+import com.humanoid.emobin.global.exception.CustomException;
+import com.humanoid.emobin.global.response.EmotionErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,6 @@ public class PythonExecutor {
     public List<String> runRecommendScript(String emotion, String message, String genre, int count) {
         List<String> result = new ArrayList<>();
 
-        // ✅ 여기서 실제 값이 잘 주입되었는지 확인
         log.info("📍 Python 실행기 경로: {}", pythonExecPath);
         log.info("📍 Python 추천 스크립트 경로: {}", recommendScriptPath);
 
@@ -33,12 +34,12 @@ public class PythonExecutor {
             command.add(recommendScriptPath);
             command.add(emotion != null ? emotion : "");
             command.add(message != null ? message : "");
-            command.add(genre != null ? genre : ""); // null 방지
+            command.add(genre != null ? genre : "");
             command.add(String.valueOf(count));
 
             // 2. 프로세스 실행
             ProcessBuilder pb = new ProcessBuilder(command);
-            pb.environment().put("PYTHONIOENCODING", "utf-8"); // 한글 깨짐 방지
+            pb.environment().put("PYTHONIOENCODING", "utf-8");
             pb.redirectErrorStream(true);
             Process process = pb.start();
 
@@ -46,18 +47,20 @@ public class PythonExecutor {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    result.add(line.trim()); // 추천된 제목 한 줄씩
+                    result.add(line.trim());
                 }
             }
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 log.error("Python recommend script exited with code {}", exitCode);
+                throw new CustomException(EmotionErrorCode.PYTHON_EXECUTION_ERROR);
             }
         } catch (Exception e) {
             log.error("Error executing Python script", e);
-            return List.of();
+            throw new CustomException(EmotionErrorCode.PYTHON_EXECUTION_ERROR);
         }
+
         log.info("✅ 추천 영화 결과: {}", result);
         return result;
     }
