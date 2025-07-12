@@ -23,7 +23,7 @@ public class MusicService {
     }
 
     public List<MusicResponseDto> getRecommendation(RecommendationRequest request) {
-        List<Music> randomByEmotion = musicRepository.findRandomByEmotion(request.getEmotion(), 3);
+        List<Music> randomByEmotion = musicRepository.findRandomByEmotion(request.getSimplifiedEmotion(), 3);
         return randomByEmotion.stream()
                 .map(MusicResponseDto::from)
                 .toList();
